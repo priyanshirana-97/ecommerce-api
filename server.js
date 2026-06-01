@@ -4,6 +4,8 @@ const cors = require("cors")
 const morgan = require("morgan")
 
 const connectDB = require("./config/db")
+const logger = require("./middleware/loggerMiddleware")
+const { notFound, errorHandler } = require("./middleware/errorMiddleware")
 
 dotenv.config()
 
@@ -14,6 +16,7 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 app.use(morgan("dev"))
+app.use(logger)
 
 app.get("/", (req, res) => {
     res.json({
@@ -26,6 +29,9 @@ const productRoutes = require("./routes/productRoutes")
 
 app.use("/api/auth", authRoutes)
 app.use("/api/products", productRoutes)
+
+app.use(notFound)
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000
 
