@@ -1,11 +1,34 @@
-require("dotenv").config();
+const express = require("express")
+const dotenv = require("dotenv")
+const cors = require("cors")
+const morgan = require("morgan")
 
-const app=require("./src/app");
-const connectDB=require("./src/config/db")
+const connectDB = require("./config/db")
 
-connectDB();
+dotenv.config()
 
-const PORT=process.env.PORT||4000
-app.listen(PORT,()=>{
-    console.log(`server is running ${PORT}`)
+connectDB()
+
+const app = express()
+
+app.use(express.json())
+app.use(cors())
+app.use(morgan("dev"))
+
+app.get("/", (req, res) => {
+    res.json({
+        message: "API Running"
+    })
+})
+
+const authRoutes = require("./routes/authRoutes")
+const productRoutes = require("./routes/productRoutes")
+
+app.use("/api/auth", authRoutes)
+app.use("/api/products", productRoutes)
+
+const PORT = process.env.PORT || 5000
+
+app.listen(PORT, () => {
+    console.log(`Server Running on ${PORT}`)
 })
